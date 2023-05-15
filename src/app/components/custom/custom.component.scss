@@ -1,0 +1,298 @@
+// Mixin for generating new styles
+@mixin btn-styles($btn-color, $btn-states-color) {
+  background-color: $btn-color;
+
+
+
+  &:hover,
+  &:focus,
+  &:not(:disabled):not(.disabled):active,
+  &:not(:disabled):not(.disabled).active,
+  &:not(:disabled):not(.disabled):active:focus,
+  &:not(:disabled):not(.disabled).active:focus,
+  &:active:hover,
+  &.active:hover,
+  .show > &.dropdown-toggle,
+  .show > &.dropdown-toggle:focus,
+  .show > &.dropdown-toggle:hover {
+    background-color: $btn-states-color;
+    color: $white-color;
+    box-shadow: none;
+  }
+
+  &:hover{
+    box-shadow:  0 3px 8px 0 rgba(0,0,0, 0.17);
+  }
+
+  &.disabled,
+  &:disabled,
+  &[disabled],
+  fieldset[disabled] & {
+    &,
+    &:hover,
+    &:focus,
+    &.focus,
+    &:active,
+    &.active {
+      background-color: $btn-color;
+      border-color: $btn-color;
+    }
+  }
+
+  /*// btn-neutral style
+  @if $btn-color == $white-color{
+    color: $primary-color;
+
+
+    &.btn-danger{
+      color: $danger-color;
+
+      &:hover,
+      &:focus,
+      &:active{
+        color: $danger-states-color;
+      }
+    }
+
+    &.btn-primary{
+      color: $primary-color;
+
+      &:hover,
+      &:focus,
+      &:active{
+        color: $primary-states-color;
+      }
+    }
+
+    &.btn-info{
+      color: $info-color;
+
+      &:hover,
+      &:focus,
+      &:active{
+        color: $info-states-color;
+      }
+    }
+
+    &.btn-warning{
+      color: $warning-color;
+
+      &:hover,
+      &:focus,
+      &:active{
+        color: $warning-states-color;
+      }
+    }
+
+    &.btn-success{
+      color: $success-color;
+
+      &:hover,
+      &:focus,
+      &:active{
+        color: $success-states-color;
+      }
+    }
+
+    &.btn-default{
+      color: $default-color;
+
+      &:hover,
+      &:focus,
+      &:active{
+        color: $default-states-color;
+      }
+    }
+
+    &:hover,
+    &:focus,
+    &:not(:disabled):not(.disabled):active,
+    &:not(:disabled):not(.disabled).active,
+    &:not(:disabled):not(.disabled):active:focus,
+    &:not(:disabled):not(.disabled).active:focus,
+    &:active:hover,
+    &.active:hover,
+    .show > &.dropdown-toggle,
+    .show > &.dropdown-toggle:focus,
+    .show > &.dropdown-toggle:hover {
+      background-color: $white-color;
+      color: $primary-states-color;
+      box-shadow: none;
+    }
+
+    &:hover,
+    &:focus{
+      color: $primary-states-color;
+
+      &:not(.nav-link){
+        box-shadow: none;
+      }
+
+    }
+
+  } @else {*/
+    color: $white-color;
+  //}
+
+  &.btn-simple{
+    color: $btn-color;
+    border-color: $btn-color;
+
+    &:hover,
+    &:focus,
+    &:not(:disabled):not(.disabled):active,
+    &:not(:disabled):not(.disabled).active,
+    &:not(:disabled):not(.disabled):active:focus,
+    &:not(:disabled):not(.disabled).active:focus,
+    &:active:hover,
+    &.active:hover,
+    .show > &.dropdown-toggle,
+    .show > &.dropdown-toggle:focus,
+    .show > &.dropdown-toggle:hover{
+      background-color: $transparent-bg;
+      color: $btn-states-color;
+      border-color: $btn-states-color;
+      box-shadow: none;
+    }
+  }
+
+  &.btn-link{
+    color: $btn-color;
+
+    &:hover,
+    &:focus,
+    &:not(:disabled):not(.disabled):active,
+    &:not(:disabled):not(.disabled).active,
+    &:not(:disabled):not(.disabled):active:focus,
+    &:not(:disabled):not(.disabled).active:focus,
+    &:active:hover,
+    &.active:hover,
+    .show > &.dropdown-toggle,
+    .show > &.dropdown-toggle:focus,
+    .show > &.dropdown-toggle:hover{
+      background-color: $transparent-bg;
+      color: $btn-states-color;
+      text-decoration: none;
+      box-shadow: none;
+    }
+  }
+}
+
+
+.text-container {
+  //float: right;
+  //width: 40%;
+  height: 350px;
+  //padding: 20px;
+  box-sizing: border-box;
+  text-align: left;
+  text-align-all: left;
+  align-self: center;
+  //background-color: #74dfff;
+}
+
+$white: #f8f8f8;
+$padding-btn-vertical:         11px !default;
+$padding-btn-horizontal:       22px !default;
+$border-thin:                1px !default;
+$default-color:              #888888 !default;
+$transparent-bg:             transparent !default;
+$padding-round-horizontal:     23px !default;
+//$black-color: rgba(52, 52, 52, 0.74) !default;
+$custom-btn-color: #0a2b4d;
+$btn-round-radius:             30px         !default;
+$dark-background: #2f50b6 !default;
+$white-color:                #FFFFFF !default;
+:host {
+  ::ng-deep {
+    ng-scrollbar.virtual-scroll {
+      --scrollbar-size: 8px;
+      //--scrollbar-thumb-color: red;
+      --scrollbar-thumb-color: #777777;
+      --scrollbar-thumb-hover-color: #062731;
+      --scrollbar-hover-size: 12px;
+      --scrollbar-track-color: rgba(0, 0, 0, 0.05);
+      --scrollbar-border-radius: 10px;
+
+      margin: 1em;
+      height: 350px;
+      max-height: fit-content;
+      width: 90%;
+      border-radius: 6px;
+      border: 1px solid gray;
+      overflow: hidden;
+    }
+  }
+}
+
+.inner {
+  width: 140%;
+}
+
+.example-item {
+  //height: 50px;
+  height: fit-content;
+  display: flex;
+  text-align: left;
+  padding-left: 2em;
+  text-align-all: left;
+alignment: left;
+/*  &:nth-child(odd) {
+    background: #EEEEEE;
+  }
+
+  &:nth-child(even) {
+    background: white;
+  }*/
+}
+
+video {
+  width: 99%;
+  height: 66%;
+  border-radius: 10px;
+}
+.process-video {
+  @include btn-styles($custom-btn-color, $dark-background);
+  border-width: $border-thin;
+  border-radius: $btn-round-radius !important;
+  padding: $padding-btn-vertical  $padding-round-horizontal;
+  border-color: $default-color;
+  padding: $padding-btn-vertical - 1 $padding-round-horizontal - 1;
+  position: relative;
+  float: right;
+}
+
+.choose::-webkit-file-upload-button  {
+@include btn-styles($custom-btn-color, $dark-background);
+  border-width: $border-thin;
+  border-radius: $btn-round-radius !important;
+  padding: $padding-btn-vertical  $padding-round-horizontal;
+  border-color: $default-color;
+  padding: $padding-btn-vertical - 1 $padding-round-horizontal - 1;
+  //background-color: $transparent-bg;
+/*  &.btn-simple{
+    padding: $padding-btn-vertical - 1  $padding-round-horizontal - 1;
+  }*/
+}
+.btn-simple{
+  border-color: $default-color;
+  padding: $padding-btn-vertical - 1 $padding-round-horizontal - 1;
+  background-color: $transparent-bg;
+}
+
+.section-tabs {
+  background: #FFFFFF;
+}
+button:disabled{
+  opacity: 0.3;
+}
+.switch_c {
+  text-align-all: left;
+  text-align: left;
+  display: flex;
+  width: fit-content;
+  margin: 1em;
+}
+.switch_c_c {
+  margin-left: 1em;
+}
