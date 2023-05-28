@@ -1,7 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {DocService} from "../../service/doc.service";
-import {inflate} from "zlib";
 import {Doc} from "../../model/doc";
+import * as FileSaver from "file-saver";
 
 // import {IAlert, NotificationComponent} from '../notification/notification.component'
 
@@ -11,7 +11,7 @@ import {Doc} from "../../model/doc";
     styleUrls: ['./custom.component.scss']
 })
 export class CustomComponent implements OnInit {
-
+    video: HTMLMediaElement = document.querySelector("video")
     fileName = '';
     textDivided = false;
     formData: FormData = new FormData();
@@ -19,13 +19,14 @@ export class CustomComponent implements OnInit {
     format: string = '';
     spRecognitionStarted = false;
     spRecognitionProgress = 0
-    // items = this.getNewText();
     rawText = []
     text = this.rawText
     dividedText = []
+    keysExtracted = false
     rawTextWithSubs = this.getRawTextWithSubs();
     duration = 0.0;
     eventSource;
+    keys = []
 
     constructor(private docService: DocService) {
     }
@@ -39,9 +40,11 @@ export class CustomComponent implements OnInit {
                 let joinedDividedText = this.dividedText.join("\n");
                 console.log(joinedDividedText)
                 this.text = joinedDividedText.split("\n");
-            } else {
-                this.startDividing()
             }
+            /*
+            else {
+                    this.startDividing()
+                }*/
         } else {
             this.text = this.rawText;
         }
@@ -50,16 +53,12 @@ export class CustomComponent implements OnInit {
     subscribe() {
         this.eventSource = new EventSource('http://localhost:8080/events');
         const messageListener = (event) => {
-            console.log('Received event:', event.data);
-            console.log('event name', event.type)
-
             if (event.data == '[\"done\"]') {
                 this.eventSource.removeEventListener('message', messageListener)
                 this.spRecognitionProgress = 100;
                 this.addAlert();
-
+                this.startDividing()
             } else {
-                // if (this.rawTextWithSubs.length != event.data.split('\",\"').length) {
                 if (event.data != "") {
                     this.rawTextWithSubs = event.data.split('\",\"');
                     this.rawText = this.getRawText();
@@ -67,10 +66,8 @@ export class CustomComponent implements OnInit {
                 }
             }
         };
+        this.eventSource.addEventListener('message', messageListener)
         const durationListener = (event) => {
-            console.log('Received event:', event.data);
-
-            console.log('event name', event.type)
             if (event.data == -1.0) {
                 this.spRecognitionProgress = 1;
                 this.eventSource.removeEventListener('duration', durationListener)
@@ -79,7 +76,6 @@ export class CustomComponent implements OnInit {
             }
         };
 
-        this.eventSource.addEventListener('message', messageListener)
         this.eventSource.addEventListener('duration', durationListener)
     }
 
@@ -96,7 +92,8 @@ export class CustomComponent implements OnInit {
                 console.log('dividedTextCame')
                 this.eventSource.removeEventListener('division', divideListener)
                 // this.spRecognitionProgress = 100;
-                this.addAlert();
+                // this.addAlert();
+
 
             } else {
                 // if (this.rawTextWithSubs.length != event.data.split('\",\"').length) {
@@ -108,7 +105,28 @@ export class CustomComponent implements OnInit {
                 // }
             }
         };
+        const keysListener = (event) => {
+            console.log('Received event:', event.data);
+            console.log('event name', event.type)
+
+            if (event.data == '[\"done\"]') {
+                console.log('keysCame')
+                this.keysExtracted = true
+                this.eventSource.removeEventListener('keys', keysListener)
+                // this.spRecognitionProgress = 100;
+                // this.addAlert();
+                this.keysAlert()
+
+            } else {
+                // if (this.rawTextWithSubs.length != event.data.split('\",\"').length) {
+                // if (event.data != '[""]') {
+                this.keys = event.data.replace(']', '').replace('[', '').split(',');
+                // this.divide()
+                // }
+            }
+        };
         this.eventSource.addEventListener('division', divideListener);
+        this.eventSource.addEventListener('keys', keysListener);
     }
 
     ngOnInit() {
@@ -191,9 +209,11 @@ export class CustomComponent implements OnInit {
         if (file) {
             var reader = new FileReader();
             reader.readAsDataURL(file);
-            if (file.type.indexOf('image') > -1) {
-                this.format = 'image';
-            } else if (file.type.indexOf('video') > -1) {
+            this.format = 'none';
+            /*  if (file.type.indexOf('image') > -1) {
+                  this.format = 'image';
+              } else */
+            if (file.type.indexOf('video') > -1) {
                 this.format = 'video';
             }
             reader.onload = (event) => {
@@ -213,14 +233,14 @@ export class CustomComponent implements OnInit {
             ind = item.indexOf("]");
             if (ind > 0) {
                 ind1 = item.indexOf(">")
-                if (ind1 != -1 && this.duration > 0.0 && textWithSubs.indexOf(item) == textWithSubs.length - 1) {
-                    console.log(item.substring(ind1 + 2, ind - 1))
-                    console.log(+item.substring(ind1 + 2, ind - 1))
-                    this.spRecognitionProgress = Math.ceil((+item.substring(ind1 + 2, ind - 1)) / this.duration * 100);
+                if (ind1 != -1 && this.duration > 0.0 &&
+                    textWithSubs.indexOf(item) == textWithSubs.length - 1) {
+                    this.spRecognitionProgress = Math.ceil((+item.substring(ind1 + 2, ind - 1))
+                        / this.duration * 100);
                 }
-                newText.push(item.substring(ind + 2))
+                newText.push(item.substring(ind + 2).replace(']', '').replace('[', '').replace('"', ''))
             } else {
-                newText.push(item)
+                newText.push(item.replace(']', '').replace('[', '').replace('"', ''))
             }
         }
         let t = newText.join(" ");
@@ -233,8 +253,7 @@ export class CustomComponent implements OnInit {
     }
 
     getRawTextWithSubs() {
-        var text = "[0.00s -> 27.48s]  ДИНАМИЧНАЯ МУЗЫКА\n" +
-            "[27.64s -> 32.80s]  Итак, давайте закрепим, что мы узнали о частях речи.\n"
+        var text = ""
 
         return text.split('\n')
     }
@@ -253,15 +272,28 @@ export class CustomComponent implements OnInit {
         this.alerts = [{
             id: 1,
             type: 'success',
-            strong: 'Done!',
-            message: 'Video  has been successfully converted to text.',
+            strong: 'Готово!',
+            message: 'Текст был успешно извлечен.',
             icon: 'ui-2_like'
-        }, {
+        }/*, {
             id: 2,
             strong: 'INFO',
             type: 'info',
-            message: 'Press toggle button to divide tex on paragraphs',
+            message: 'Press toggle button to divide text on paragraphs',
             icon: 'travel_info'
+        }*/];
+        this.backup = this.alerts.map((alert: IAlert) => Object.assign({}, alert));
+
+        // this.alerts = [...this.alerts]
+    }
+
+    public keysAlert() {
+        this.alerts = [{
+            id: 1,
+            type: 'success',
+            strong: 'Готово!!',
+            message: 'Ключевые слова извлечены.',
+            icon: 'ui-2_like'
         }];
         this.backup = this.alerts.map((alert: IAlert) => Object.assign({}, alert));
 
@@ -275,6 +307,21 @@ export class CustomComponent implements OnInit {
         this.subscribe()
     }
 
+    setTime(time: string) {
+        this.video = document.querySelector("video")
+        console.log(this.video)
+        console.log(this.video.currentTime)
+        console.log(time)
+        this.video.currentTime = +time;
+    }
+
+    saveDoc() {
+        // this.docService.save(new Doc(1, "", "Заголовок", "Маша")).subscribe(result => console.log("response", result))
+
+        let file = new Blob(["Ключевые слова: " + this.keys.join(", ").replace(']', '').replace('"', '').replace("\"", '') + "\n\n" + this.dividedText.join("\n").replace(']', '').replace('\"', '').replace('[', '')], {type: "text/plain;charset=utf-8"});
+        FileSaver.saveAs(file, "record.txt");
+
+    }
 
 }
 

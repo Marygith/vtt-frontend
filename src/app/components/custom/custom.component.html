@@ -1,10 +1,10 @@
 <div class="section">
     <div class="container">
-<!--        <h3 class="title">VTT app</h3>-->
+        <!--        <h3 class="title">VTT app</h3>-->
         <div class="section section-tabs">
             <div class="container">
                 <div *ngFor="let alert of alerts">
-                    <ngb-alert [type]="alert.type"  [dismissible]="false" >
+                    <ngb-alert [type]="alert.type" [dismissible]="false">
                         <div class="container">
                             <div class="alert-wrapper">
                                 <button type="button" name="button" class="close" (click)="closeAlert(alert)">
@@ -24,25 +24,31 @@
                         </div>
                     </ngb-alert>
                 </div>
+                <!--                <button class="btn-info btn-link custom-link" (click)="setTime('4.05')">4.05</button>-->
                 <div class="row">
                     <div class="col-md-10 ml-auto col-xl-6">
-                        <p class="category">Your video</p>
+                        <p class="category">Ваше видео</p>
                         <!-- Tabs with Background on Card -->
                         <video [src]="url" *ngIf="format==='video' && url" height="300" width="400" controls></video>
                         <input type='file' (change)="onSelectFile($event)" id="test" class="choose"/>
-                        <button [disabled]="!(format==='video' && url) ? 'disabled': null" (click)="processVideo()"   class="process-video disabled" type="button">Начать конвертацию</button>
+                        <button [disabled]="!(format==='video' && url) ? 'disabled': null" (click)="processVideo()"
+                                class="process-video disabled" type="button">Начать конвертацию
+                        </button>
                         <br/>
                         <br>
-<!--                        progress-container progress-success-->
-                        <div *ngIf="format==='video' && url" [ngClass]="[spRecognitionProgress < 33 ? 'progress-container progress-primary' : '', (spRecognitionProgress >= 33 && spRecognitionProgress < 66) ? 'progress-container progress-warning' : '', spRecognitionProgress >= 66 ? 'progress-container progress-success' : '']">
+                        <!--                        progress-container progress-success-->
+                        <div *ngIf="format==='video' && url"
+                             [ngClass]="[spRecognitionProgress < 33 ? 'progress-container progress-primary' : '', (spRecognitionProgress >= 33 && spRecognitionProgress < 66) ? 'progress-container progress-warning' : '', spRecognitionProgress >= 66 ? 'progress-container progress-success' : '']">
                             <span class="progress-badge">Speech recognition progress</span>
-                            <ngb-progressbar [value]=spRecognitionProgress><span class="progress-value">{{spRecognitionProgress + '%'}}</span></ngb-progressbar><br>
+                            <ngb-progressbar [value]=spRecognitionProgress><span
+                                    class="progress-value">{{spRecognitionProgress + '%'}}</span></ngb-progressbar>
+                            <br>
                         </div>
                         <!-- End Tabs on plain Card -->
                         <!--format!='video'|| !url-->
                     </div>
                     <div class="col-md-10 ml-auto col-xl-6 mr-auto">
-                        <p class="category">Your text</p>
+                        <p class="category">Результат</p>
                         <!-- Nav tabs -->
 
                         <div class="card">
@@ -51,39 +57,73 @@
                                     <ngb-tabset [justify]="'center'" class="text-center">
                                         <ngb-tab>
                                             <ng-template ngbTabTitle>
-                                                <!--<i class="now-ui-icons objects_umbrella-13"></i>--> Raw text
+                                                <!--<i class="now-ui-icons objects_umbrella-13"></i>--> Текст
                                             </ng-template>
                                             <ng-template ngbTabContent class="text-container">
                                                 <ng-scrollbar class="virtual-scroll" thumbClass="white-scrollbars">
-                                                    <cdk-virtual-scroll-viewport scrollViewport itemSize="10" class="example-viewport">
-                                                        <div *cdkVirtualFor="let item of text" class="example-item">{{item}}</div>
+                                                    <cdk-virtual-scroll-viewport scrollViewport itemSize="10"
+                                                                                 class="example-viewport">
+                                                        <div *cdkVirtualFor="let item of text"
+                                                             class="example-item">{{item.replace(']', '').replace('\"', '').replace('[', '')}}</div>
                                                     </cdk-virtual-scroll-viewport>
                                                 </ng-scrollbar>
                                                 <div class="switch_c">
-                                                    <p>  Divide text on paragraphs</p>
-                                                <bSwitch
-                                                        class="switch_c_c" [(ngModel)]="textDivided" [disabled]="spRecognitionProgress != 100" (ngModelChange)="divide()"> <!--class="switch_c"-->
-                                                </bSwitch>
+                                                    <p> Разделить на абзацы</p>
+                                                    <bSwitch
+                                                            class="switch_c_c" [(ngModel)]="textDivided"
+                                                            [disabled]="spRecognitionProgress != 100"
+                                                            (ngModelChange)="divide()"> <!--class="switch_c"-->
+                                                    </bSwitch>
                                                 </div>
-                                                  </ng-template>
-<!--                                            <div class="col-sm-6 col-lg-3">-->
+                                            </ng-template>
+                                            <!--                                            <div class="col-sm-6 col-lg-3">-->
 
-<!--                                            </div>-->
+                                            <!--                                            </div>-->
                                         </ngb-tab>
                                         <ngb-tab>
                                             <ng-template ngbTabTitle>
-                                                <!--<i class="now-ui-icons shopping_cart-simple"></i>--> Raw text with subs
+                                                <!--<i class="now-ui-icons shopping_cart-simple"></i>--> Текст с
+                                                тайм-кодами
                                             </ng-template>
                                             <ng-template ngbTabContent class="text-container">
                                                 <ng-scrollbar class="virtual-scroll" thumbClass="white-scrollbars">
-                                                    <cdk-virtual-scroll-viewport scrollViewport itemSize="10" class="example-viewport">
-                                                        <div *cdkVirtualFor="let item of rawTextWithSubs" class="example-item">{{item}}</div>
+                                                    <cdk-virtual-scroll-viewport scrollViewport itemSize="10"
+                                                                                 class="example-viewport">
+                                                        <div *cdkVirtualFor="let item of rawTextWithSubs"
+                                                             class="example-item">
+                                                            <button class="btn-link btn-info custom-link"
+                                                                    (click)="setTime(item.substring(1, item.indexOf('-') - 2))">{{item.substring(1, item.indexOf("]")).replace('[', '').replace('"', '')  }}  </button>
+
+                                                            {{item.substring(item.indexOf("]") + 2).replace(']', '').replace('\"', '')}}
+                                                        </div>
+                                                    </cdk-virtual-scroll-viewport>
+                                                </ng-scrollbar>
+                                            </ng-template>
+                                        </ngb-tab>
+                                        <ngb-tab *ngIf="keysExtracted">
+                                            <ng-template ngbTabTitle>
+                                                <!--<i class="now-ui-icons shopping_cart-simple"></i>--> Ключевые слова
+                                            </ng-template>
+                                            <ng-template ngbTabContent class="text-container">
+                                                <ng-scrollbar class="virtual-scroll" thumbClass="white-scrollbars">
+                                                    <cdk-virtual-scroll-viewport scrollViewport itemSize="10"
+                                                                                 class="example-viewport">
+                                                        <div *cdkVirtualFor="let item of keys" class="example-item">
+                                                            {{item}}
+                                                        </div>
                                                     </cdk-virtual-scroll-viewport>
                                                 </ng-scrollbar>
                                             </ng-template>
                                         </ngb-tab>
                                     </ngb-tabset>
+
                                 </div>
+
+                            </div>
+                            <div class="switch_c">
+                                <button [disabled]="!(keysExtracted) ? 'disabled': null" (click)="saveDoc()"
+                                        class="process-video disabled" type="button">Сохранить в файл
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -92,8 +132,8 @@
             </div>
         </div>
 
-      </div>
     </div>
+</div>
 
 <!--
 
