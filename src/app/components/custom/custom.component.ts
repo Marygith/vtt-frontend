@@ -12,6 +12,7 @@ import * as FileSaver from "file-saver";
 })
 export class CustomComponent implements OnInit {
     video: HTMLMediaElement = document.querySelector("video")
+    audio: HTMLMediaElement = document.querySelector("audio")
     fileName = '';
     textDivided = false;
     formData: FormData = new FormData();
@@ -208,13 +209,17 @@ export class CustomComponent implements OnInit {
         this.formData.append('videoFile', event.target.files[0], event.target.files[0].name)
         if (file) {
             var reader = new FileReader();
+            console.log(file.type)
             reader.readAsDataURL(file);
             this.format = 'none';
             /*  if (file.type.indexOf('image') > -1) {
                   this.format = 'image';
               } else */
-            if (file.type.indexOf('video') > -1) {
+            if (file.type.indexOf('webm') > -1 || file.type.indexOf('ogg') > -1 || file.type.indexOf('mp4') > -1 || file.type.indexOf('video') > -1) {
                 this.format = 'video';
+            }
+            if (file.type.indexOf('mpeg') > -1 || file.type.indexOf('wav') > -1) {
+                this.format = 'audio';
             }
             reader.onload = (event) => {
                 this.url = (<FileReader>event.target).result;
@@ -308,11 +313,20 @@ export class CustomComponent implements OnInit {
     }
 
     setTime(time: string) {
-        this.video = document.querySelector("video")
-        console.log(this.video)
-        console.log(this.video.currentTime)
-        console.log(time)
-        this.video.currentTime = +time;
+        if (this.format == 'video') {
+            this.video = document.querySelector("video")
+            console.log(this.video)
+            console.log(this.video.currentTime)
+            console.log(time)
+            this.video.currentTime = +time;
+        }
+        if (this.format == 'audio') {
+            this.audio = document.querySelector("audio")
+            console.log(this.audio)
+            console.log(this.audio.currentTime)
+            console.log(time)
+            this.audio.currentTime = +time;
+        }
     }
 
     saveDoc() {

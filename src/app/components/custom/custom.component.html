@@ -29,15 +29,16 @@
                     <div class="col-md-10 ml-auto col-xl-6">
                         <p class="category">Ваше видео</p>
                         <!-- Tabs with Background on Card -->
-                        <video [src]="url" *ngIf="format==='video' && url" height="300" width="400" controls></video>
+                        <video [src]="url" *ngIf="format==='video' && url" height="300" width="450" controls></video>
+                        <audio [src]="url" *ngIf="format==='audio' && url" controls></audio>
                         <input type='file' (change)="onSelectFile($event)" id="test" class="choose"/>
-                        <button [disabled]="!(format==='video' && url) ? 'disabled': null" (click)="processVideo()"
+                        <button [disabled]="!((format==='video' || format==='audio') && url) ? 'disabled': null" (click)="processVideo()"
                                 class="process-video disabled" type="button">Начать конвертацию
                         </button>
                         <br/>
                         <br>
                         <!--                        progress-container progress-success-->
-                        <div *ngIf="format==='video' && url"
+                        <div *ngIf="(format==='video' || format==='audio') && url"
                              [ngClass]="[spRecognitionProgress < 33 ? 'progress-container progress-primary' : '', (spRecognitionProgress >= 33 && spRecognitionProgress < 66) ? 'progress-container progress-warning' : '', spRecognitionProgress >= 66 ? 'progress-container progress-success' : '']">
                             <span class="progress-badge">Speech recognition progress</span>
                             <ngb-progressbar [value]=spRecognitionProgress><span
